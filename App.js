@@ -16,6 +16,8 @@ import BMR from "./src/screens/BMR";
 import Profile from "./src/screens/Profile";
 import BuyPlan from "./src/screens/BuyPlan";
 import ProductDetail from "./src/screens/ProductDetail";
+import ProductPay from "./src/screens/ProductPay";
+import ProductPay1 from "./src/screens/ProductPay1";
 import CalorieCalculator from "./src/screens/CalorieCalculator";
 import Diet from "./src/screens/Diet";
 import BottomNavigator from "./src/BottomNavigator/BottomNavigator";
@@ -23,6 +25,7 @@ import ProfileSettings from "./src/screens/ProfileSettings";
 import Cart from "./src/screens/Cart";
 import Cart1 from "./src/screens/Cart1";
 import Orders from "./src/screens/Orders";
+import ShopKYC from "./src/screens/ShopKYC";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -88,6 +91,16 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="ProductPay"
+          component={ProductPay}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProductPay1"
+          component={ProductPay1}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="Signup"
           component={Signup}
           options={{ headerShown: false }}
@@ -118,6 +131,11 @@ export default function App() {
         <Stack.Screen
           name="Orders"
           component={Orders}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ShopKYC"
+          component={ShopKYC}
           options={{ headerShown: false }}
         />
 

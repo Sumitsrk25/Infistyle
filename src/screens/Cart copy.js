@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
-  Modal,
   ScrollView,
   FlatList,
   ActivityIndicator,
@@ -18,7 +17,7 @@ import {
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import { Button, Badge, Divider, Dialog } from "@rneui/themed";
+import { Button, Badge, Divider } from "@rneui/themed";
 import CoachImage from "../../assets/img/coach1.jpg";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -40,29 +39,15 @@ import {
   msr,
 } from "react-native-size-matters";
 import Header3 from "../component/Header3";
-import { Strings } from "../constants";
-import WebView from "react-native-webview";
 
 const Stack = createNativeStackNavigator();
 
 const Cart = ({}) => {
   const [myData, setMyData] = useState([]);
-  const [cartTotal, setCartTotal] = useState(null);
+  const [myData1, setMyData1] = useState([]);
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
-  const [visible1, setVisible1] = useState(false);
-  const [visible2, setVisible2] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [isPaymentDone, setPaymentDone] = React.useState(false);
-
-  const toggleDialog1 = () => {
-    setVisible1(!visible1);
-  };
-  const toggleDialog2 = () => {
-    setVisible2(!visible2);
-  };
-
   const findUser = async () => {
     const result = await AsyncStorage.getItem("user_data");
     console.log(result);
@@ -81,15 +66,8 @@ const Cart = ({}) => {
           iUserId: user.uid,
         },
       })
-
-      .then((response) => {
-        console.log("API Response:", response.data);
-
-        setCartTotal(response.data.tblcarttotal);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+      .then((json) => setMyData1(json.data))
+      .finally(() => setLoading(false));
   };
 
   const getCartData = () => {
@@ -159,86 +137,11 @@ const Cart = ({}) => {
     }
   };
 
-  const orderCod = async (product_id, quantity, iCartId) => {
-    try {
-      const { data } = await axios.post(
-        "https://engistack.com/infistyle_reactapp/payment/razorpay/user_orders.php",
-        {
-          iUserId: user.uid,
-          product_id: product_id,
-          quantity: quantity,
-          iCartId: iCartId,
-        }
-      );
-
-      console.log(data);
-
-      if (data.status == "success") {
-        //Alert.alert("Challenge Accepted");
-        ToastAndroid.show(
-          "Product Purchased - Cash on Delivery !",
-          ToastAndroid.LONG
-        );
-
-        navigation.navigate("Orders");
-      } else {
-        Alert.alert("Sorry !! Product Not Purchased");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const orderCod1 = () => {
-    console.log("Request sent with data:", { iUserId: user.uid });
-
-    // Create the data object to be sent in the request body
-    const data = {
-      iUserId: user.uid,
-    };
-
-    // Configure the fetch request
-    fetch(
-      "https://engistack.com/infistyle_reactapp/payment/razorpayall/user_orders.php",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    )
-      .then((response) => {
-        // Check if the response is ok (status code 200)
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        // Parse the response as JSON
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-
-        if (data.status === "success") {
-          ToastAndroid.show(
-            "Product Purchased - Cash on Delivery !",
-            ToastAndroid.LONG
-          );
-          navigation.navigate("Orders");
-        } else {
-          Alert.alert("Sorry !! Product Not Purchased");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
   const handleRefresh = async () => {
     console.log("function is calling");
 
     setIsRefreshing(true);
-    getTotalCartData();
+
     getCartData(); // await means till it dowsnt get data it will not execute function below it
 
     setIsRefreshing(false);
@@ -248,17 +151,6 @@ const Cart = ({}) => {
     //   //   console.log("function is ending");
     // }, 2000);
     console.log("function is ending");
-  };
-
-  const handleWebViewNavigationStateChange = (newNavState) => {
-    const { url } = newNavState;
-
-    if (url === Strings.PAYMENT_END_FLOW) {
-      setModalVisible(false);
-    } else if (url === Strings.PAYMENT_SUCCESS1) {
-      setPaymentDone(true);
-      navigation.navigate("Orders");
-    }
   };
 
   return (
@@ -273,65 +165,6 @@ const Cart = ({}) => {
           />
         }
       >
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            if (!isPaymentDone) {
-              Alert.alert("Payment Cancelled. Please Try Again !! .");
-              navigation.navigate("ProductDetail");
-            }
-            setModalVisible(!modalVisible);
-            handleRefresh();
-          }}
-        >
-          <View
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            {/*
-                <WebView
-                      source={{
-                        uri: "https://engistack.com/instamojo/form.php",
-                        method: "POST",
-                        body: `iUserId=${user.uid}&Price=${item.sPrice}`,
-                      }}
-                    /> */}
-
-            <WebView
-              source={{
-                uri: "https://engistack.com/infistyle_reactapp/pay.php",
-                method: "POST",
-                body: `iUserId=${user.uid}`,
-              }}
-              onNavigationStateChange={(newNavState) =>
-                handleWebViewNavigationStateChange(newNavState)
-              }
-            />
-            {isPaymentDone && (
-              <Button
-                title={"Order Placed Successfully !!"}
-                buttonStyle={{
-                  backgroundColor: "#d63ba1",
-                  borderWidth: 2,
-                  borderColor: "white",
-                  borderRadius: 10,
-                  marginHorizontal: 5,
-                }}
-                titleStyle={{ fontWeight: "bold" }}
-                onPress={() => {
-                  // setModalVisible(!modalVisible);
-                  // handleRefresh();
-                  navigation.navigate("Cart");
-                }}
-              />
-            )}
-          </View>
-        </Modal>
-
         <View style={{ marginBottom: 100 }}>
           <Card containerStyle={{ borderRadius: 15 }}>
             <View style={{ display: "flex", flexDirection: "row" }}>
@@ -342,95 +175,19 @@ const Cart = ({}) => {
               />
 
               <Text style={styles.coachnameh3}>My Cart</Text>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {cartTotal !== null && cartTotal !== undefined ? (
-                <LinearGradient
-                  colors={["orangered", "orangered"]}
-                  start={{ x: 0.3, y: 0.2 }}
-                  end={{ x: 0.6, y: 0.8 }}
-                  style={{
-                    borderRadius: 10,
-                    height: 50,
-                    paddingHorizontal: 20,
-                    paddingVertical: 5,
-                    fontSize: 12,
-                    marginVertical: 10,
-                  }}
-                >
-                  <TouchableOpacity onPress={toggleDialog2}>
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <Icon
-                        raised
-                        name="shopping-bag"
-                        type="Feather"
-                        color="black"
-                        size={10}
-                        containerStyle={{}}
-                      />
-                      <Text
-                        style={{
-                          paddingHorizontal: 2,
-                          paddingVertical: 10,
-                          fontSize: 15,
-                          fontWeight: "bold",
-                          color: "white",
-                        }}
-                      >
-                        Proceed to Buy All:{" ₹ " + cartTotal}
-                      </Text>
+              <FlatList
+                data={myData1}
+                keyExtractor={(item, index) => index.toString()} // Assuming each item has a unique index
+                renderItem={({ item }) => (
+                  <>
+                    <View>
+                      <Text>11{item.tblcarttotal}</Text>
                     </View>
-                  </TouchableOpacity>
-
-                  <Dialog isVisible={visible2} onBackdropPress={toggleDialog2}>
-                    <Dialog.Title title="Buy Now" />
-                    <Text>Purchase by paying online or cash on delivery.</Text>
-                    <Dialog.Actions>
-                      <Dialog.Button
-                        title="Pay Online 💳"
-                        onPress={() => {
-                          //  setModalVisible(true);
-                          //  setPaymentDone(false);
-
-                          navigation.navigate("ProductPay1", {
-                            iUserId: user.uid,
-                            product_amount: cartTotal,
-                          });
-                        }}
-                      />
-                      <Dialog.Button
-                        title="Cash On Delivery 🏠"
-                        onPress={() => orderCod1()}
-                      />
-                    </Dialog.Actions>
-                  </Dialog>
-                </LinearGradient>
-              ) : (
-                <Text></Text>
-              )}
+                  </>
+                )}
+              />
             </View>
-            {/* <Text
-                style={{
-                  textAlign: "left",
-                  marginLeft: 60,
-                  marginRight: 40,
-                  marginTop: -10,
-                  fontSize: 13,
-                }}
-              >
-                Try it now by tapping on any nutrition plan below
-              </Text> */}
+            <View style={{ display: "flex", flexDirection: "row" }}></View>
           </Card>
           <Card containerStyle={{ borderRadius: 10 }}>
             <View>
@@ -461,38 +218,6 @@ const Cart = ({}) => {
                           marginVertical: 10,
                         }}
                       >
-                        <Dialog
-                          isVisible={visible1}
-                          onBackdropPress={toggleDialog1}
-                        >
-                          <Dialog.Title title="Buy Now" />
-                          <Text>
-                            Purchase by paying online or cash on delivery.
-                          </Text>
-                          <Dialog.Actions>
-                            <Dialog.Button
-                              title="Pay Online 💳"
-                              onPress={() => {
-                                navigation.navigate("ProductPay", {
-                                  iUserId: user.uid,
-                                  product_id: item.product_id,
-                                  quantity: item.quantity,
-                                });
-                              }}
-                            />
-                            <Dialog.Button
-                              title="Cash On Delivery 🏠"
-                              onPress={() =>
-                                orderCod(
-                                  item.product_id,
-                                  item.quantity,
-                                  item.iCartId
-                                )
-                              }
-                            />
-                          </Dialog.Actions>
-                        </Dialog>
-
                         <View
                           style={{
                             flex: 2,
@@ -581,14 +306,16 @@ const Cart = ({}) => {
                                 }}
                               >
                                 <TouchableOpacity
-                                  onPress={toggleDialog1}
-                                  // onPress={() => {
-                                  //   navigation.navigate("ProductPay", {
-                                  //     iUserId: user.uid,
-                                  //     product_id: item.product_id,
-                                  //     quantity: item.quantity,
-                                  //   });
-                                  // }}
+                                  onPress={() => {
+                                    //  setModalVisible(true);
+                                    //  setPaymentDone(false);
+
+                                    navigation.navigate("ProductPay", {
+                                      iUserId: user.uid,
+                                      product_id: item.product_id,
+                                      quantity: item.quantity,
+                                    });
+                                  }}
                                 >
                                   <View
                                     style={{

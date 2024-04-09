@@ -15,7 +15,7 @@ import {
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Header, Icon, Card, Tile, Input, Dialog } from "@rneui/themed";
+import { Header, Icon, Card, Tile, Input } from "@rneui/themed";
 import { Button } from "@rneui/themed";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
@@ -27,8 +27,10 @@ import { Strings } from "../constants";
 import { Dropdown } from "react-native-element-dropdown";
 import { ImageSlider } from "react-native-image-slider-banner";
 
-const ProductDetail = ({ route, navigation }) => {
+const ProductPay = ({ route, navigation }) => {
   const { product_id } = route.params;
+  const { quantity } = route.params;
+  const { iUserId } = route.params;
   const [isLoaded, setIsLoaded] = useState(true);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [myData, setMyData] = useState([]);
@@ -36,13 +38,7 @@ const ProductDetail = ({ route, navigation }) => {
   const [isPaymentDone, setPaymentDone] = React.useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState("1"); // Set the default value to '1' or any other minimum value
 
-  const [visible2, setVisible2] = useState(false);
-
   const [user, setUser] = useState({});
-
-  const toggleDialog2 = () => {
-    setVisible2(!visible2);
-  };
 
   const _renderItem = (item) => {
     return (
@@ -60,6 +56,7 @@ const ProductDetail = ({ route, navigation }) => {
   };
   useEffect(() => {
     findUser();
+    setModalVisible(true);
   }, []);
 
   useEffect(() => {
@@ -84,11 +81,18 @@ const ProductDetail = ({ route, navigation }) => {
         {
           product_id: product_id,
           uid: user.uid,
-          quantity: selectedQuantity,
         }
       );
 
       console.log(data);
+      const userData = {
+        email: data.data.product_id,
+        uid: data.data.iUserId,
+
+        // email: data.data.email,
+        // uid: data.data.id,
+        // uname: data.data.uname,
+      };
 
       if (data.status == "success") {
         //Alert.alert("Challenge Accepted");
@@ -97,35 +101,6 @@ const ProductDetail = ({ route, navigation }) => {
         navigation.navigate("Cart");
       } else {
         Alert.alert("Sorry !! Product Not Added");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const orderCod = async () => {
-    try {
-      const { data } = await axios.post(
-        "https://engistack.com/infistyle_reactapp/payment/razorpay/user_orders.php",
-        {
-          iUserId: user.uid,
-          product_id: product_id,
-          quantity: selectedQuantity,
-        }
-      );
-
-      console.log(data);
-
-      if (data.status == "success") {
-        //Alert.alert("Challenge Accepted");
-        ToastAndroid.show(
-          "Product Purchased - Cash on Delivery !",
-          ToastAndroid.LONG
-        );
-
-        navigation.navigate("Orders");
-      } else {
-        Alert.alert("Sorry !! Product Not Purchased");
       }
     } catch (err) {
       console.log(err);
@@ -152,6 +127,8 @@ const ProductDetail = ({ route, navigation }) => {
 
     if (url === Strings.PAYMENT_END_FLOW) {
       setModalVisible(false);
+      Alert.alert("Hurrey 🎉 Payment Successful !! .");
+      navigation.navigate("Orders");
     } else if (url === Strings.PAYMENT_SUCCESS1) {
       setPaymentDone(true);
       navigation.navigate("Orders");
@@ -189,9 +166,9 @@ const ProductDetail = ({ route, navigation }) => {
             onRequestClose={() => {
               if (!isPaymentDone) {
                 Alert.alert("Payment Cancelled. Please Try Again !! .");
-                navigation.navigate("ProductDetail");
               }
               setModalVisible(!modalVisible);
+              navigation.navigate("Home");
               handleRefresh();
             }}
           >
@@ -211,10 +188,13 @@ const ProductDetail = ({ route, navigation }) => {
                     /> */}
 
               <WebView
+                javaScriptCanOpenWindowsAutomatically={true}
+                javaScriptEnabled={true}
                 source={{
-                  uri: "https://engistack.com/infistyle_reactapp/pay.php",
+                  // uri: "https://engistack.com/infistyle_reactapp/pay.php",
+                  uri: "https://engistack.com/infistyle_reactapp/payment/razorpay/form.php",
                   method: "POST",
-                  body: `iUserId=${user.uid}&ProductId=${product_id}`,
+                  body: `iUserId=${iUserId}&ProductId=${product_id}&Quantity=${quantity}`,
                 }}
                 onNavigationStateChange={(newNavState) =>
                   handleWebViewNavigationStateChange(newNavState)
@@ -234,7 +214,7 @@ const ProductDetail = ({ route, navigation }) => {
                   onPress={() => {
                     // setModalVisible(!modalVisible);
                     // handleRefresh();
-                    navigation.navigate("ProductDetail");
+                    navigation.navigate("Orders");
                   }}
                 />
               )}
@@ -257,13 +237,13 @@ const ProductDetail = ({ route, navigation }) => {
                           <ImageSlider
                             data={[
                               {
-                                img: `https://engistack.com/infistyle_reactapp/infipanel/admin/image/${item.prod_pic1}`,
+                                img: item.prod_pic1,
                               },
                               {
-                                img: `https://engistack.com/infistyle_reactapp/infipanel/admin/image/${item.prod_pic2}`,
+                                img: "https://prod-img.thesouledstore.com/public/theSoul/storage/mobile-cms-media-prod/banner-images/B99_Homepage-Banner_5_gyuQOiA.jpg?format=webp&w=1500&dpr=1.3",
                               },
                               {
-                                img: `https://engistack.com/infistyle_reactapp/infipanel/admin/image/${item.prod_pic3}`,
+                                img: "https://prod-img.thesouledstore.com/public/theSoul/uploads/themes/8914320230110194745.jpg?format=webp&w=1500&dpr=1.3",
                               },
                             ]}
                             caroselImageStyle={{
@@ -297,6 +277,9 @@ const ProductDetail = ({ route, navigation }) => {
                                   marginBottom: 10,
                                 }}
                               >
+                                <Text>{user.uid}</Text>
+                                <Text>{product_id}</Text>
+                                <Text>{quantity}</Text>
                                 <Text
                                   style={{
                                     fontWeight: "bold",
@@ -505,19 +488,11 @@ const ProductDetail = ({ route, navigation }) => {
             titleStyle={{ color: "black" }}
             onPress={() => signupUser()}
           />
-
           <Button
-            onPress={toggleDialog2}
-            // onPress={() => {
-            //   //  setModalVisible(true);
-            //   //  setPaymentDone(false);
-
-            //   navigation.navigate("ProductPay", {
-            //     iUserId: user.uid,
-            //     product_id: product_id,
-            //     quantity: selectedQuantity,
-            //   });
-            // }}
+            onPress={() => {
+              setModalVisible(true);
+              setPaymentDone(false);
+            }}
             title="Buy Now"
             buttonStyle={{
               backgroundColor: "orangered",
@@ -533,30 +508,6 @@ const ProductDetail = ({ route, navigation }) => {
             titleStyle={{ fontWeight: "bold" }}
           />
         </View>
-
-        <Dialog isVisible={visible2} onBackdropPress={toggleDialog2}>
-          <Dialog.Title title="Buy Now" />
-          <Text>Purchase by paying online or cash on delivery.</Text>
-          <Dialog.Actions>
-            <Dialog.Button
-              title="Pay Online 💳"
-              onPress={() => {
-                //  setModalVisible(true);
-                //  setPaymentDone(false);
-
-                navigation.navigate("ProductPay", {
-                  iUserId: user.uid,
-                  product_id: product_id,
-                  quantity: selectedQuantity,
-                });
-              }}
-            />
-            <Dialog.Button
-              title="Cash On Delivery 🏠"
-              onPress={() => orderCod()}
-            />
-          </Dialog.Actions>
-        </Dialog>
 
         {/* <View
           style={{
@@ -656,7 +607,6 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     paddingHorizontal: 10,
     width: "100%",
-    borderRadius: 50,
   },
   item: {
     paddingVertical: 17,
@@ -671,4 +621,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductDetail;
+export default ProductPay;

@@ -40,6 +40,7 @@ const Home = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [myData, setMyData] = useState([]);
   const [myData1, setMyData1] = useState([]);
+  const [myData2, setMyData2] = useState([]);
   const [user, setUser] = useState({});
 
   const findUser = async () => {
@@ -63,13 +64,27 @@ const Home = () => {
   const getProductTop = () => {
     axios
       .get("https://engistack.com/infistyle_reactapp/producttop.php", {})
-      //   .get("https://engistack.com/infistyle_reactapp/productall.php")
       .then((json) => setMyData1(json.data))
       .finally(() => setIsLoaded(true));
   };
 
-  useEffect(() => getUserData(), []);
-  useEffect(() => getProductTop(), []);
+  const getProductNew = () => {
+    axios
+      .get("https://engistack.com/infistyle_reactapp/productnew.php", {})
+      .then((json) => setMyData2(json.data))
+      .finally(() => setIsLoaded(true));
+  };
+
+  // useEffect(() => getUserData(), []);
+  // useEffect(() => getProductTop(), []);
+  // useEffect(() => getProductTop(), []);
+
+  useEffect(() => {
+    getUserData();
+    getProductTop();
+    getProductNew();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loginUser = async (itemid) => {
     navigation.dispatch(
@@ -85,8 +100,8 @@ const Home = () => {
         style={{
           flexDirection: "row",
           flex: 1,
-          marginBottom: moderateScale(30),
-          paddingHorizontal: moderateScale(20),
+          marginBottom: moderateScale(10),
+          paddingHorizontal: moderateScale(5),
         }}
       >
         <View>
@@ -100,10 +115,17 @@ const Home = () => {
               })
             }
           >
-            <View style={{ display: "flex", width: 150 }}>
+            <View
+              style={{
+                display: "flex",
+                width: 182,
+                paddingHorizontal: 0,
+                borderRadius: 10,
+              }}
+            >
               {/* <Text>{item.iCategoryId}</Text> */}
               <Card.Image
-                style={{ width: "100%" }}
+                style={{ width: "100%", height: 200 }}
                 source={{
                   uri: item.sCategoryimage,
                 }}
@@ -116,8 +138,8 @@ const Home = () => {
   };
 
   return (
-    // <SafeAreaProvider style={styles.container}>
-    <ImageBackground style={styles.container} source={BackgroundImg}>
+    <SafeAreaProvider style={styles.container}>
+      {/* <SafeAreaProvider style={styles.container} source={BackgroundImg}> */}
       <View
         style={{
           flex: 1,
@@ -170,7 +192,7 @@ const Home = () => {
 
                   borderRadius: 10,
                 }}
-                autoPlay={true}
+                autoPlay={false}
                 preview={false}
                 showIndicator={true}
                 onItemChanged={(item) => console.log("item", item)}
@@ -179,7 +201,7 @@ const Home = () => {
                 indicatorContainerStyle={{ bottom: -15 }}
               ></ImageSlider>
             </View>
-            <View></View>
+
             <Text
               style={[
                 styles.heading,
@@ -190,7 +212,7 @@ const Home = () => {
                 },
               ]}
             >
-              MENS COLLECTION
+              CATEGORIES
               {/* <Text style={{ fontSize: 20 }}>Email = {user.uid}</Text> */}
             </Text>
 
@@ -205,13 +227,13 @@ const Home = () => {
               style={[
                 styles.heading,
                 {
-                  marginVertical: moderateScale(10),
+                  marginTop: moderateScale(10),
                   textAlign: "left",
                   marginHorizontal: moderateScale(20),
                 },
               ]}
             >
-              TOP SELLING
+              NEW ARRIVALS
               {/* <Text style={{ fontSize: 20 }}>Email = {user.uid}</Text> */}
             </Text>
 
@@ -224,75 +246,84 @@ const Home = () => {
                   flexDirection: "row",
                   flex: 1,
                   marginBottom: moderateScale(10),
-                  marginLeft: moderateScale(30),
+                  marginLeft: moderateScale(15),
                 }}
               >
                 <FlatList
                   horizontal
-                  data={myData1}
+                  data={myData2}
                   renderItem={({ item }) => {
-                    return (
-                      <View
-                        style={{
-                          marginRight: 0,
-                          flexDirection: "row",
-                          flex: 1,
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() =>
-                            navigation.navigate("ProductDetail", {
-                              product_id: item.product_id,
-                            })
-                          }
+                    if (item.prod_stock == 0) {
+                      //do something
+                    } else {
+                      return (
+                        <View
+                          style={{
+                            marginRight: 0,
+                            flexDirection: "row",
+                            flex: 1,
+                          }}
                         >
-                          <Card containerStyle={{ height: 300 }}>
-                            <View style={{ width: 140 }}>
-                              <Card.Image
-                                style={{ width: "100%", height: 200 }}
-                                source={{
-                                  uri: item.prod_pic1,
-                                }}
-                              />
-                            </View>
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.navigate("ProductDetail", {
+                                product_id: item.product_id,
+                              })
+                            }
+                          >
+                            <Card
+                              containerStyle={{
+                                height: 300,
+                                marginLeft: -5,
+                                borderRadius: 5,
                               }}
                             >
-                              <Text
+                              <View style={{ width: 140 }}>
+                                <Card.Image
+                                  style={{ width: "100%", height: 200 }}
+                                  source={{
+                                    uri: `https://engistack.com/infistyle_reactapp/infipanel/admin/image/${item.prod_pic1}`,
+                                  }}
+                                />
+                              </View>
+                              <View
                                 style={{
-                                  fontSize: 12,
-                                  fontWeight: "500",
-                                  paddingTop: 10,
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                {" ₹ " + item.product_amount}
-                              </Text>
-                              {/* <Text style={styles.categoryText}>
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: "500",
+                                    paddingTop: 10,
+                                  }}
+                                >
+                                  {" ₹ " + item.product_amount}
+                                </Text>
+                                {/* <Text style={styles.categoryText}>
                                 {item.product_name}
                               </Text> */}
-                            </View>
+                              </View>
 
-                            <Text
-                              style={{
-                                textAlign: "left",
-                                fontSize: 12,
-                                fontWeight: "500",
-                              }}
-                            >
-                              {" "}
-                              {item.product_name}
-                            </Text>
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "center",
-                                marginTop: 10,
-                              }}
-                            >
-                              {/* <TouchableOpacity
+                              <Text
+                                style={{
+                                  textAlign: "left",
+                                  fontSize: 12,
+                                  fontWeight: "500",
+                                }}
+                              >
+                                {" "}
+                                {item.product_name}
+                              </Text>
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  justifyContent: "center",
+                                  marginTop: 10,
+                                }}
+                              >
+                                {/* <TouchableOpacity
                                 style={{
                                   borderWidth: 1,
                                   borderRadius: 10,
@@ -325,39 +356,207 @@ const Home = () => {
                                   </Text>
                                 </View>
                               </TouchableOpacity> */}
-                            </View>
-                          </Card>
-                          <TouchableOpacity
-                            style={{
-                              width: 40,
-                              height: 40,
-                              borderRadius: 20,
-                              backgroundColor: "#fff",
-                              elevation: 5,
-                              position: "absolute",
-                              top: 20,
-                              right: 25,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Image
-                              source={require("../../assets/img/eye.png")}
+                              </View>
+                            </Card>
+                            <TouchableOpacity
                               style={{
-                                width: 24,
-                                height: 24,
+                                width: 40,
+                                height: 40,
+                                borderRadius: 20,
+                                backgroundColor: "#fff",
+                                elevation: 5,
+                                position: "absolute",
+                                top: 20,
+                                right: 25,
+                                justifyContent: "center",
+                                alignItems: "center",
                               }}
-                            />
+                            >
+                              <Image
+                                source={require("../../assets/img/eye.png")}
+                                style={{
+                                  width: 24,
+                                  height: 24,
+                                }}
+                              />
+                            </TouchableOpacity>
                           </TouchableOpacity>
-                        </TouchableOpacity>
-                      </View>
-                    );
+                        </View>
+                      );
+                    }
                   }}
                 />
               </View>
             </ScrollView>
 
-            <View
+            <Text
+              style={[
+                styles.heading,
+                {
+                  marginTop: moderateScale(20),
+                  textAlign: "left",
+                  marginHorizontal: moderateScale(20),
+                },
+              ]}
+            >
+              TOP SELLING
+              {/* <Text style={{ fontSize: 20 }}>Email = {user.uid}</Text> */}
+            </Text>
+
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={{ marginBottom: 150 }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  flex: 1,
+                  marginBottom: moderateScale(10),
+                  marginLeft: moderateScale(15),
+                }}
+              >
+                <FlatList
+                  horizontal
+                  data={myData1}
+                  renderItem={({ item }) => {
+                    if (item.prod_stock == 0) {
+                      //do something
+                    } else {
+                      return (
+                        <View
+                          style={{
+                            marginRight: 0,
+                            flexDirection: "row",
+                            flex: 1,
+                          }}
+                        >
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.navigate("ProductDetail", {
+                                product_id: item.product_id,
+                              })
+                            }
+                          >
+                            <Card
+                              containerStyle={{
+                                height: 300,
+                                marginLeft: -5,
+                                borderRadius: 5,
+                              }}
+                            >
+                              <View style={{ width: 140 }}>
+                                <Card.Image
+                                  style={{ width: "100%", height: 200 }}
+                                  source={{
+                                    uri: `https://engistack.com/infistyle_reactapp/infipanel/admin/image/${item.prod_pic1}`,
+                                  }}
+                                />
+                              </View>
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: "500",
+                                    paddingTop: 10,
+                                  }}
+                                >
+                                  {" ₹ " + item.product_amount}
+                                </Text>
+                                {/* <Text style={styles.categoryText}>
+                                  {item.product_name}
+                                </Text> */}
+                              </View>
+
+                              <Text
+                                style={{
+                                  textAlign: "left",
+                                  fontSize: 12,
+                                  fontWeight: "500",
+                                }}
+                              >
+                                {" "}
+                                {item.product_name}
+                              </Text>
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  justifyContent: "center",
+                                  marginTop: 10,
+                                }}
+                              >
+                                {/* <TouchableOpacity
+                                  style={{
+                                    borderWidth: 1,
+                                    borderRadius: 10,
+                                    borderColor: "grey",
+                                    fontSize: 12,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                    }}
+                                  >
+                                    <Icon
+                                      raised
+                                      name="shopping-cart"
+                                      type="Feather"
+                                      color="black"
+                                      size={12}
+                                      containerStyle={{}}
+                                    />
+                                    <Text
+                                      style={{
+                                        padding: 7,
+                                        paddingTop: 10,
+                                        fontSize: 12,
+                                      }}
+                                    >
+                                      Add to Cart
+                                    </Text>
+                                  </View>
+                                </TouchableOpacity> */}
+                              </View>
+                            </Card>
+                            <TouchableOpacity
+                              style={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 20,
+                                backgroundColor: "#fff",
+                                elevation: 5,
+                                position: "absolute",
+                                top: 20,
+                                right: 25,
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Image
+                                source={require("../../assets/img/eye.png")}
+                                style={{
+                                  width: 24,
+                                  height: 24,
+                                }}
+                              />
+                            </TouchableOpacity>
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    }
+                  }}
+                />
+              </View>
+            </ScrollView>
+
+            {/* <View
               style={{
                 display: "flex",
                 marginBottom: 30,
@@ -371,9 +570,9 @@ const Home = () => {
                   uri: "https://img.udaan.com/v1/f_auto,q_auto:eco,w_1600/u/merchandising/t1md9od81xeezy4ispip.jpg",
                 }}
               />
-            </View>
+            </View> */}
 
-            <Text
+            {/* <Text
               style={[
                 styles.heading,
                 {
@@ -383,10 +582,10 @@ const Home = () => {
               ]}
             >
               CELEBRITY CLOSETS
-              {/* <Text style={{ fontSize: 20 }}>Email = {user.uid}</Text> */}
-            </Text>
+         
+            </Text> */}
 
-            <View
+            {/* <View
               style={{
                 display: "flex",
                 marginBottom: 10,
@@ -400,8 +599,8 @@ const Home = () => {
                   uri: "https://prod-img.thesouledstore.com/public/theSoul/storage/mobile-cms-media-prod/banner-images/Homepage_Banner_hardik_1.jpg?format=webp&w=1500&dpr=1.3",
                 }}
               />
-            </View>
-
+            </View> */}
+            {/* 
             <View style={{ display: "flex", marginBottom: 120 }}>
               <Card>
                 <Card.Image
@@ -411,9 +610,9 @@ const Home = () => {
                   }}
                 />
               </Card>
-            </View>
+            </View> */}
 
-            <Text
+            {/* <Text
               style={[
                 styles.heading,
                 {
@@ -423,10 +622,9 @@ const Home = () => {
               ]}
             >
               CELEBRITY CLOSETS
-              {/* <Text style={{ fontSize: 20 }}>Email = {user.uid}</Text> */}
-            </Text>
+            </Text> */}
 
-            <View
+            {/* <View
               style={{
                 display: "flex",
                 marginBottom: 10,
@@ -440,7 +638,7 @@ const Home = () => {
                   uri: "https://prod-img.thesouledstore.com/public/theSoul/storage/mobile-cms-media-prod/banner-images/Homepage_Banner_hardik_1.jpg?format=webp&w=1500&dpr=1.3",
                 }}
               />
-            </View>
+            </View> */}
           </ScrollView>
         ) : (
           <View>
@@ -449,7 +647,7 @@ const Home = () => {
           </View>
         )}
       </View>
-    </ImageBackground>
+    </SafeAreaProvider>
   );
 };
 

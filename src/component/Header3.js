@@ -103,7 +103,7 @@ const Header3 = () => {
               <FontAwesome
                 name={"shopping-bag"}
                 size={20}
-                style={{ color: "#d63ba1", textAlign: "center" }}
+                style={{ color: "#085ac6", textAlign: "center" }}
               />
               <Text
                 style={{
@@ -139,13 +139,14 @@ const Header3 = () => {
         centerComponent={
           <Avatar
             source={{
-              uri: "https://engistack.com/infistyle_reactapp/infistyle_logo1.png",
+              uri: "https://engistack.com/infistyle_reactapp/infistyle_logo22.png",
             }}
             // title="Infistyle"
             containerStyle={{
               backgroundColor: "white",
-              width: "60%",
-              height: 37,
+              width: "70%",
+              height: 40,
+              marginTop: 5,
             }}
           ></Avatar>
         }

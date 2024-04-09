@@ -98,11 +98,11 @@ const BottomNavigator = () => {
               <MaterialCommunityIcons
                 name="home-outline"
                 size={40}
-                color={focused ? "orangered" : "black"}
+                color={focused ? "#085ac6" : "black"}
               />
               <Text
                 style={{
-                  color: focused ? "orangered" : "black",
+                  color: focused ? "#085ac6" : "black",
                   fontSize: 10,
                   textAlign: "center",
                 }}
@@ -124,12 +124,12 @@ const BottomNavigator = () => {
               <MaterialCommunityIcons
                 name="search-web"
                 size={30}
-                color={focused ? "orangered" : "black"}
+                color={focused ? "#085ac6" : "black"}
                 style={{ textAlign: "center" }}
               />
               <Text
                 style={{
-                  color: focused ? "orangered" : "black",
+                  color: focused ? "#085ac6" : "black",
                   fontSize: 10,
                   textAlign: "justify",
                 }}
@@ -170,11 +170,11 @@ const BottomNavigator = () => {
               <MaterialCommunityIcons
                 name="cards-heart-outline"
                 size={30}
-                color={focused ? "orangered" : "black"}
+                color={focused ? "#085ac6" : "black"}
               />
               <Text
                 style={{
-                  color: focused ? "orangered" : "black",
+                  color: focused ? "#085ac6" : "black",
                   fontSize: 10,
                   textAlign: "center",
                 }}
@@ -197,11 +197,11 @@ const BottomNavigator = () => {
               <MaterialCommunityIcons
                 name="account-circle-outline"
                 size={40}
-                color={focused ? "orangered" : "black"}
+                color={focused ? "#085ac6" : "black"}
               />
               <Text
                 style={{
-                  color: focused ? "orangered" : "black",
+                  color: focused ? "#085ac6" : "black",
                   fontSize: 10,
                   textAlign: "center",
                 }}

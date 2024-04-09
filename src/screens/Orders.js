@@ -53,7 +53,7 @@ const Orders = () => {
 
   const getUserData1 = () => {
     axios
-      .get("https://engistack.com/test_reactapp/user_orders.php", {
+      .get("https://engistack.com/infistyle_reactapp/user_orders.php", {
         params: {
           iUserId: user.uid,
         },
@@ -255,6 +255,7 @@ const Orders = () => {
                             style={{ justifyContent: "flex-start" }}
                           />
                         </View>
+
                         <View style={{ flex: 4 }}>
                           <Text style={{ marginLeft: 20 }}>Order Name:</Text>
                         </View>
@@ -275,20 +276,21 @@ const Orders = () => {
                         style={{
                           flexDirection: "row",
                           flex: 1,
-                          marginVertical: 30,
+                          marginBottom: 40,
                         }}
                       >
                         <View style={{ flex: 1 }}>
                           <Icon
-                            name="language"
+                            name="clock-o"
                             type="font-awesome"
                             color="gray"
                             size={20}
                             style={{ justifyContent: "flex-start" }}
                           />
                         </View>
+
                         <View style={{ flex: 4 }}>
-                          <Text style={{ marginLeft: 20 }}>Order Id:</Text>
+                          <Text style={{ marginLeft: 20 }}>Quantity:</Text>
                         </View>
                         <View style={{ flex: 4 }}>
                           <Text
@@ -298,10 +300,79 @@ const Orders = () => {
                               fontWeight: "normal",
                             }}
                           >
-                            {item.pay_order_id}
+                            {item.quantity}
                           </Text>
                         </View>
                       </View>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          flex: 1,
+                          marginVertical: 10,
+                        }}
+                      >
+                        <View style={{ flex: 1 }}>
+                          <Icon
+                            name="truck"
+                            type="font-awesome"
+                            color="gray"
+                            size={20}
+                            style={{ justifyContent: "flex-start" }}
+                          />
+                        </View>
+                        <View style={{ flex: 4 }}>
+                          <Text style={{ marginLeft: 20 }}>Order Type:</Text>
+                        </View>
+                        <View style={{ flex: 4 }}>
+                          <Text
+                            style={{
+                              position: "absolute",
+                              left: 0,
+                              fontWeight: "normal",
+                            }}
+                          >
+                            {item.order_type}
+                          </Text>
+                        </View>
+                      </View>
+
+                      {item.order_type === "COD" ? null : (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            flex: 1,
+                            marginVertical: 10,
+                          }}
+                        >
+                          <View style={{ flex: 1 }}>
+                            <Icon
+                              name="language"
+                              type="font-awesome"
+                              color="gray"
+                              size={20}
+                              style={{ justifyContent: "flex-start" }}
+                            />
+                          </View>
+                          <View style={{ flex: 4 }}>
+                            <Text style={{ marginLeft: 20 }}>
+                              Order Id: {item.orderId}
+                            </Text>
+                          </View>
+
+                          <View style={{ flex: 4 }}>
+                            <Text
+                              style={{
+                                position: "absolute",
+                                left: 0,
+                                fontWeight: "normal",
+                              }}
+                            >
+                              {item.pay_order_id}
+                            </Text>
+                          </View>
+                        </View>
+                      )}
 
                       <View
                         style={{

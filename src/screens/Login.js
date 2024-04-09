@@ -166,7 +166,7 @@ const Login = () => {
             <Text style={{ color: "#fff", textAlign: "center", fontSize: 15 }}>
               or
             </Text>
-
+            {/* 
             <TouchableOpacity
               style={[
                 styles.loginButton,
@@ -189,7 +189,7 @@ const Login = () => {
               >
                 Continue with Google
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <View style={{ flexDirection: "row" }}>
               <Text
@@ -201,18 +201,18 @@ const Login = () => {
               <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
                 <Text
                   style={{
-                    color: "#02C38E",
+                    color: "black",
                     fontWeight: "bold",
                     fontSize: 17,
                     paddingLeft: 10,
                   }}
                 >
-                  Signup ?
+                  Signup
                 </Text>
               </TouchableOpacity>
             </View>
 
-            <View>
+            {/* <View>
               <Text
                 style={{
                   color: "#02C38E",
@@ -224,7 +224,7 @@ const Login = () => {
                 {" "}
                 Forgot your Password ?
               </Text>
-            </View>
+            </View> */}
           </View>
         </View>
       </View>

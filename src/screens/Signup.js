@@ -7,36 +7,76 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
+  ImageBackground,
+  BackHandler,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import BackgroundImg from "../../assets/img/loginscreen.webp";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import { useNavigation, StackActions } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import SwitchSelector from "react-native-switch-selector";
+import Login from "./Login";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const [mobile, setMobile] = useState("");
+  const [name, setName] = useState("");
 
   const navigation = useNavigation();
 
   const signupUser = async () => {
     try {
+      if (!name.trim()) {
+        alert("Please Enter Name");
+        return;
+      }
+
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+      if (!emailRegex.test(email)) {
+        //Alert.alert("Valid Email", "Email is valid.");
+        alert("Please Enter Valid Email");
+        return false;
+      }
+      //Check for the Email TextInput
+      // else if (!email.trim()) {
+      //   alert("Please Enter Email");
+      //   return false;
+      // }
+      // else {
+      //   Alert.alert("Invalid Email", "Please enter a valid email.");
+      // }
+
+      if (!mobile.trim()) {
+        alert("Please enter your Mobile No");
+        return;
+      }
+
+      if (!password.trim()) {
+        alert("Please Enter Password");
+        return;
+      }
+
       console.log("email :", email);
       console.log("password :", password);
-      console.log("height :", height);
-      console.log("weight :", weight);
+      console.log("mobile :", mobile);
+
+      console.log("name :", name);
+      // formData.append('photo', { uri: localUri, name: filename, type });
+      // formData.append('email,',email)
 
       const { data } = await axios.post(
         "https://engistack.com/infistyle_reactapp/signup.php",
         {
           email: email,
           password: password,
-          height: height,
-          weight: weight,
+
+          name: name,
+          mobile: mobile,
         }
       );
 
@@ -52,7 +92,7 @@ const Signup = () => {
       };
 
       if (data.status == "success") {
-        //Alert.alert('User Login Successfully');
+        Alert.alert("User Login Successfully");
         const user = { email: email };
         await AsyncStorage.setItem("user", JSON.stringify(user));
         await AsyncStorage.setItem("user_data", JSON.stringify(userData));
@@ -62,15 +102,27 @@ const Signup = () => {
           // StackActions.replace("Home")  // Replace Login Page with Home Page , means redirect to Hoem Screen if Login
           StackActions.replace("BottomNavigator", {
             myName: `${data.data.uname}`,
-            myId: `${data.data.id}`,
+            myId: `${data.data.uid}`,
           })
         );
-      } else {
-        Alert.alert("User Not Created");
+      } else if (data.status == "exist") {
+        Alert.alert("Email Id Already Exist");
       }
     } catch (err) {
       console.log(err);
+      Alert.alert("Plz Try Again ! User Not Created");
     }
+  };
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", backAction);
+  }, []);
+
+  const backAction = () => {
+    navigation.navigate(Login);
   };
 
   return (
@@ -86,13 +138,29 @@ const Signup = () => {
       <View style={styles.formContainer}>
         <View style={styles.formTopContainer}>
           <FontAwesome name="angle-left" size={30} color="#fff" />
-          <Text style={{ color: "#fff", fontSize: 38, fontWeight: "bold" }}>
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: 38,
+              fontWeight: "bold",
+              marginBottom: 50,
+            }}
+          >
             Signup
           </Text>
         </View>
 
         <View style={styles.formBottomContainer}>
           <View style={styles.formBottomSubContainer}>
+            <View style={styles.customInputContainer}>
+              <Text>Full Name</Text>
+              <TextInput
+                placeholder="Enter Your Full Name"
+                placeholderTextColor={"grey"}
+                onChangeText={(text) => setName(text)}
+              />
+            </View>
+
             <View style={styles.customInputContainer}>
               <Text>Email</Text>
               <TextInput
@@ -103,33 +171,45 @@ const Signup = () => {
             </View>
 
             <View style={styles.customInputContainer}>
+              <Text>Mobile No</Text>
+              <TextInput
+                placeholder="Enter Your Mobile No"
+                placeholderTextColor={"grey"}
+                onChangeText={(text) => setMobile(text)}
+              />
+            </View>
+
+            <View style={styles.customInputContainer}>
               <Text>Password</Text>
-              <TextInput
-                placeholder="Enter Your Password"
-                placeholderTextColor={"grey"}
-                secureTextEntry={true}
-                onChangeText={(text) => setPassword(text)}
-              />
+              <View style={styles.customPassContainer}>
+                <TextInput
+                  placeholder="Enter Your Password"
+                  placeholderTextColor={"grey"}
+                  secureTextEntry={isPasswordVisible ? false : true}
+                  onChangeText={(text) => setPassword(text)}
+                />
+
+                <TouchableOpacity
+                  onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                >
+                  <FontAwesome
+                    name={isPasswordVisible ? "eye-slash" : "eye"}
+                    size={20}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
-            <View style={styles.customInputContainer}>
-              <Text>Height (cms)</Text>
-              <TextInput
-                placeholder="Enter Your Height in cms"
-                placeholderTextColor={"grey"}
-                onChangeText={(text) => setHeight(text)}
-              />
-            </View>
-
-            <View style={styles.customInputContainer}>
+            {/* <View style={styles.customInputContainer}>
               <Text>Weight (kgs)</Text>
               <TextInput
                 placeholder="Enter Your Weight in kgs"
                 placeholderTextColor={"grey"}
                 onChangeText={(text) => setWeight(text)}
               />
-            </View>
-            <View>
+            </View> */}
+
+            {/* <View>
               <Text
                 style={{
                   color: "#fff",
@@ -152,7 +232,7 @@ const Signup = () => {
                   Terms of Service and Privacy Policy
                 </Text>
               </Text>
-            </View>
+            </View> */}
             <TouchableOpacity
               style={styles.loginButton}
               onPress={() => signupUser()}
@@ -176,7 +256,7 @@ const Signup = () => {
               <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                 <Text
                   style={{
-                    color: "#02C38E",
+                    color: "white",
                     fontWeight: "bold",
                     fontSize: 17,
                     paddingLeft: 10,
@@ -213,7 +293,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     position: "absolute",
-    height: "100%",
+    height: "90%",
     width: "100%",
   },
   formTopContainer: {
@@ -222,6 +302,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 10,
     marginLeft: 10,
+    marginBottom: 0,
   },
   formBottomContainer: {
     flex: 2,
@@ -247,12 +328,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
   },
+  customPassContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
   loginButton: {
     backgroundColor: "#02C38E",
     padding: 10,
     alignItems: "center",
     borderRadius: 10,
-    marginVertical: 10,
+    marginVertical: 20,
   },
 });
 

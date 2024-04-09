@@ -392,7 +392,7 @@ const ProfileSettings = () => {
                 <View style={styles.servicecards}>
                   <View style={{ flexDirection: "column", flex: 1 }}>
                     <TouchableOpacity
-                      onPress={() => navigation.navigate("Tools")}
+                      onPress={() => navigation.navigate("Profile")}
                     >
                       <View
                         style={{
@@ -494,7 +494,7 @@ const ProfileSettings = () => {
                 <View style={styles.servicecards}>
                   <View style={{ flexDirection: "column", flex: 1 }}>
                     <TouchableOpacity
-                      onPress={() => navigation.navigate("Home")}
+                      onPress={() => navigation.navigate("ShopKYC")}
                     >
                       <View
                         style={{
@@ -509,7 +509,7 @@ const ProfileSettings = () => {
                         }}
                       >
                         <Icon
-                          name="home"
+                          name="card-account-details"
                           type="material-community"
                           color="#f53658"
                           size={20}
@@ -518,7 +518,7 @@ const ProfileSettings = () => {
                         />
                       </View>
 
-                      <Text style={styles.profileinput}>Shop</Text>
+                      <Text style={styles.profileinput}>KYC</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

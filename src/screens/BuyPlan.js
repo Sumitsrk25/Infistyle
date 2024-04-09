@@ -117,7 +117,7 @@ const BuyPlan = ({ navigation, route }) => {
                 <Card.Image
                   style={{ width: "100%", height: 200 }}
                   source={{
-                    uri: item.prod_pic1,
+                    uri: `https://engistack.com/infistyle_reactapp/infipanel/admin/image/${item.prod_pic1}`,
                   }}
                 />
               </View>
