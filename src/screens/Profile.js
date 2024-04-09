@@ -218,20 +218,6 @@ const Profile = ({ route, navigation }) => {
             />
           }
         >
-          {/* <View>
-            <Text> Email = {user.uid}</Text>
-            <FlatList
-              data={myData}
-              renderItem={({ item }) => (
-                <>
-                  <Text>UserId : {item.iUserId}</Text>
-                  <Text>Name : {item.sName}</Text>
-                  <Text>Email : {item.sEmailId}</Text>
-                </>
-              )}
-            />
-          </View> */}
-
           <FlatList
             data={myData}
             renderItem={({ item }) => (
@@ -295,7 +281,7 @@ const Profile = ({ route, navigation }) => {
                     <TextInput
                       placeholder="Business Name"
                       style={styles.inputplaceholder}
-                      onChangeText={(text) => setHeight(text)}
+                      onChangeText={(text) => setBname(text)}
                       defaultValue={item.sBName}
                     />
                   </View>

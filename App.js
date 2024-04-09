@@ -14,6 +14,7 @@ import Signup from "./src/screens/Signup";
 import BFP from "./src/screens/BFP";
 import BMR from "./src/screens/BMR";
 import Profile from "./src/screens/Profile";
+import Passwd from "./src/screens/Passwd";
 import BuyPlan from "./src/screens/BuyPlan";
 import ProductDetail from "./src/screens/ProductDetail";
 import ProductPay from "./src/screens/ProductPay";
@@ -117,7 +118,11 @@ export default function App() {
           component={Profile}
           options={{ headerShown: false }}
         />
-
+        <Stack.Screen
+          name="Passwd"
+          component={Passwd}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Cart"
           component={Cart}
